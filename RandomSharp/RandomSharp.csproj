@@ -2,6 +2,29 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>1.0.0</Version>
+    <Authors>Fouad ELOUAD</Authors>
+    <Company>Fouad ELOUAD</Company>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/fouad-elouad/RandomSharp</RepositoryUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Description>RandomSharp is a lightweight random data generator for .NET.
+It is designed to be easy to use and flexible, allowing you to generate random data for testing, simulations, 
+or any other scenario where you need randomized values. It provides a range of methods to generate different types of random data,
+making it suitable for a wide range of use cases.</Description>
+    <Title>RandomSharp</Title>
+    <PackageId>RandomSharp</PackageId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
 </Project>
