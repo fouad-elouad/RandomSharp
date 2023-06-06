@@ -69,6 +69,12 @@ namespace RandomSharp
         bool? NullableBoolean();
 
         /// <summary>
+        /// Get a random boolean with true weight.
+        /// </summary>
+        /// <param name="weight">The probability of true. Ranges from 0 to 1.</param>
+        bool Boolean(double weight);
+
+        /// <summary>
         /// Get random Int between two integers
         /// </summary>
         /// <param name="min">min int, Inclusive</param>
@@ -135,12 +141,21 @@ namespace RandomSharp
         T Random<T>(IList<T> list);
 
         /// <summary>
+        /// Get random value from list with weights
+        /// </summary>
+        /// <typeparam name="T">list type</typeparam>
+        /// <param name="list">list of values</param>
+        /// <param name="weights">list of weights corresponding to the values</param>
+        /// <returns>value</returns>
+        T Random<T>(IList<T> list, double[] weights);
+
+        /// <summary>
         /// Get random value from parameters
         /// </summary>
         /// <typeparam name="T">list type</typeparam>
         /// <param name="list">list</param>
         /// <returns>value</returns>
-        T Random<T>(params T[] list) where T : struct;
+        T Random<T>(params T[] list);
 
         /// <summary>
         /// Generate random string

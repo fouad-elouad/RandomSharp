@@ -6,10 +6,8 @@ using System.Text;
 namespace RandomSharp
 {
 
-    public class Randomizer : IRandomizer
+    public abstract class Randomizer
     {
-        protected static Random _Random = new Random();
-
         public const string _UppercaseAlpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         public const string _LowercaseAlpha = "abcdefghijklmnopqrstuvwxyz";
         public const string _Numeric = "0123456789";
@@ -81,7 +79,7 @@ namespace RandomSharp
         {
             if (max <= min)
                 return min;
-            var rand_seconds = (max - min).TotalSeconds * _Random.NextDouble();
+            var rand_seconds = (max - min).TotalSeconds * InternalDouble();
             return min.AddSeconds(rand_seconds);
         }
 
@@ -114,6 +112,15 @@ namespace RandomSharp
         public bool? NullableBoolean()
         {
             return Nullable<bool?>(() => InternalBoolean());
+        }
+
+        /// <summary>
+        /// Get a random boolean with true weight.
+        /// </summary>
+        /// <param name="weight">The probability of true. Ranges from 0 to 1.</param>
+        public bool Boolean(double weight)
+        {
+            return InternalDouble() < weight;
         }
 
         /// <summary>
@@ -157,7 +164,7 @@ namespace RandomSharp
         /// <returns>double</returns>
         public double Double(double min, double max)
         {
-            return _Random.NextDouble() * (max - min) + min;
+            return InternalDouble(min, max);
         }
 
         /// <summary>
@@ -169,7 +176,7 @@ namespace RandomSharp
         /// <returns>double</returns>
         public double? NullableDouble(double min, double max)
         {
-            return Nullable<double?>(() => Double(min, max));
+            return Nullable<double?>(() => InternalDouble(min, max));
         }
 
         /// <summary>
@@ -180,7 +187,7 @@ namespace RandomSharp
         /// <returns>decimal</returns>
         public decimal Decimal(decimal min, decimal max)
         {
-            return _Random.NextDouble().ToDecimal() * (max - min) + min;
+            return InternalDouble().ToDecimal() * (max - min) + min;
         }
 
         /// <summary>
@@ -207,14 +214,45 @@ namespace RandomSharp
         }
 
         /// <summary>
+        /// Get random value from list with weights
+        /// </summary>
+        /// <typeparam name="T">list type</typeparam>
+        /// <param name="list">list of values</param>
+        /// <param name="weights">list of weights corresponding to the values</param>
+        /// <returns>value</returns>
+        public T Random<T>(IList<T> list, double[] weights)
+        {
+            if (list == null || list.Count == 0)
+                return default;
+
+            if (weights == null || weights.Length != list.Count)
+                throw new ArgumentException("Weights list must have the same number of elements as the input list.");
+
+            double totalWeight = weights.Sum();
+            double randomValue = InternalDouble() * totalWeight;
+            T item = default;
+
+            double cumulativeWeight = 0;
+            for (int i = 0; i < weights.Length; i++)
+            {
+                item = list[i];
+                cumulativeWeight += weights[i];
+                if (randomValue < cumulativeWeight)
+                    break;
+            }
+
+            return item;
+        }
+
+        /// <summary>
         /// Get random value from parameters
         /// </summary>
         /// <typeparam name="T">list type</typeparam>
         /// <param name="list">list</param>
         /// <returns>value</returns>
-        public T Random<T>(params T[] list) where T : struct
+        public T Random<T>(params T[] list)
         {
-            return list != null && list.Any() ? list[_Random.Next(list.Length)] : default;
+            return list != null && list.Any() ? list[InternalInt(list.Length)] : default;
         }
 
         /// <summary>
@@ -286,7 +324,7 @@ namespace RandomSharp
 
             for (int i = 0; i < length; i++)
             {
-                char randomChar = fromChars[_Random.Next(fromChars.Length)];
+                char randomChar = fromChars[InternalInt(fromChars.Length)];
                 stringBuilder.Append(randomChar);
             }
 
@@ -337,20 +375,14 @@ namespace RandomSharp
         /// Get random boolean
         /// </summary>
         /// <returns>bool</returns>
-        protected virtual bool InternalBoolean()
-        {
-            return _Random.Next(2) == 0;
-        }
+        protected abstract bool InternalBoolean();
 
         /// <summary>
         /// Get non-negative random integer that is less than to the specified maximum.
         /// </summary>
         /// <param name="maxExclusive">maxExclusive int, exclusive</param>
         /// <returns>int</returns>
-        protected int InternalInt(int maxExclusive)
-        {
-            return _Random.Next(maxExclusive);
-        }
+        protected abstract int InternalInt(int maxExclusive);
 
         /// <summary>
         /// Returns a random integer that is within a specified range.
@@ -358,9 +390,20 @@ namespace RandomSharp
         /// <param name="minInclusive">minInclusive int, inclusive</param>
         /// <param name="maxExclusive">maxExclusive int, exclusive</param>
         /// <returns>int</returns>
-        protected int InternalInt(int minInclusive, int maxExclusive)
-        {
-            return _Random.Next(minInclusive, maxExclusive);
-        }
+        protected abstract int InternalInt(int minInclusive, int maxExclusive);
+
+        /// <summary>
+        /// Get random Double between two doubles
+        /// </summary>
+        /// <param name="min">min double</param>
+        /// <param name="max">max double</param>
+        /// <returns>double</returns>
+        protected abstract double InternalDouble(double min, double max);
+
+        /// <summary>
+        /// Get random Double between 0 and 1
+        /// </summary>
+        /// <returns>double</returns>
+        protected abstract double InternalDouble();
     }    
 }

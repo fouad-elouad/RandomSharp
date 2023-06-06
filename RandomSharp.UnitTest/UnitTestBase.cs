@@ -2,23 +2,17 @@ using RandomSharp.UnitTest.Utilities;
 
 namespace RandomSharp.UnitTest
 {
-    [TestClass]
-    public class UnitTestRandomizer
+    public abstract class UnitTestBase
     {
-        IRandomizer _randomizer = null!;
+        protected IRandomizer _randomizer = null!;
 
         public const string UppercaseAlpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         public const string LowercaseAlpha = "abcdefghijklmnopqrstuvwxyz";
         public const string Numeric = "0123456789";
 
-        [TestInitialize]
-        public void TestInitialize()
-        {
-            _randomizer = new Randomizer();
-        }
+        public abstract void TestInitialize();
 
-        [TestMethod]
-        public void Enumeration_ReturnsRandomEnumValue()
+        public virtual void Enumeration_ReturnsRandomEnumValue()
         {
             var result = _randomizer.Enumeration<TestEnum>();
 
@@ -26,8 +20,7 @@ namespace RandomSharp.UnitTest
             Assert.IsTrue(Enum.IsDefined(typeof(TestEnum), result));
         }
 
-        [TestMethod]
-        public void NullableEnumeration_ReturnsRandomEnumValueOrNull()
+        public virtual void NullableEnumeration_ReturnsRandomEnumValueOrNull()
         {
             var result = _randomizer.NullableEnumeration<TestEnum>();
             Assert.IsTrue((result != null && Enum.IsDefined(typeof(TestEnum), result)) || result == null);
@@ -39,8 +32,7 @@ namespace RandomSharp.UnitTest
             Assert.IsTrue(resultCounter.NullCount > 0 && resultCounter.NullCount < count);
         }
 
-        [TestMethod]
-        public void Date_ReturnsRandomDateBetweenMinAndMax()
+        public virtual void Date_ReturnsRandomDateBetweenMinAndMax()
         {
             var minDate = new DateTime(2020, 1, 1);
             var maxDate = new DateTime(2022, 1, 1);
@@ -51,8 +43,7 @@ namespace RandomSharp.UnitTest
             Assert.IsTrue(result >= minDate && result <= maxDate);
         }
 
-        [TestMethod]
-        public void NullableDate_ReturnsRandomDateBetweenMinAndMaxOrNull()
+        public virtual void NullableDate_ReturnsRandomDateBetweenMinAndMaxOrNull()
         {
             var minDate = new DateTime(2020, 1, 1);
             var maxDate = new DateTime(2022, 1, 1);
@@ -70,8 +61,7 @@ namespace RandomSharp.UnitTest
             Assert.IsTrue(resultCounter.List.All(d => d.Value.TimeOfDay == TimeSpan.Zero));
         }
 
-        [TestMethod]
-        public void DateTime_ShouldReturnRandomDateTimeBetweenTwoDateTimes()
+        public virtual void DateTime_ShouldReturnRandomDateTimeBetweenTwoDateTimes()
         {
             var minDateTime = new DateTime(2023, 1, 1, 12, 0, 0);
             var maxDateTime = new DateTime(2023, 5, 5, 18, 0, 0);
@@ -81,8 +71,7 @@ namespace RandomSharp.UnitTest
             Assert.IsTrue(randomDateTime >= minDateTime && randomDateTime <= maxDateTime);
         }
 
-        [TestMethod]
-        public void NullableDateTime_ShouldReturnRandomDateTimeBetweenTwoDateTimesOrNull()
+        public virtual void NullableDateTime_ShouldReturnRandomDateTimeBetweenTwoDateTimesOrNull()
         {
             var minDateTime = new DateTime(2023, 1, 1, 12, 0, 0);
             var maxDateTime = new DateTime(2023, 5, 5, 18, 0, 0);
@@ -100,16 +89,14 @@ namespace RandomSharp.UnitTest
             Assert.IsTrue(resultCounter.List.Any(d => d.Value.TimeOfDay != TimeSpan.Zero));
         }
 
-        [TestMethod]
-        public void Boolean_ShouldReturnRandomBoolean()
+        public virtual void Boolean_ShouldReturnRandomBoolean()
         {
             var randomBoolean = _randomizer.Boolean();
 
             Assert.IsTrue(randomBoolean || !randomBoolean);
         }
 
-        [TestMethod]
-        public void NullableBoolean_ShouldReturnRandomBooleanOrNull()
+        public virtual void NullableBoolean_ShouldReturnRandomBooleanOrNull()
         {
             var randomBoolean = _randomizer.NullableBoolean();
 
@@ -122,8 +109,7 @@ namespace RandomSharp.UnitTest
             Assert.IsTrue(resultCounter.List.Any(b => !b.Value));
         }
 
-        [TestMethod]
-        public void Int_ReturnsRandomIntBetweenMinAndMax()
+        public virtual void Int_ReturnsRandomIntBetweenMinAndMax()
         {
             var minInt = 1;
             var maxInt = 20;
@@ -134,8 +120,7 @@ namespace RandomSharp.UnitTest
             Assert.IsTrue(result >= minInt && result <= maxInt);
         }
 
-        [TestMethod]
-        public void NullableInt_ReturnsRandomIntBetweenMinAndMaxOrNull()
+        public virtual void NullableInt_ReturnsRandomIntBetweenMinAndMaxOrNull()
         {
             var minInt = 1;
             var maxInt = 20;
@@ -152,8 +137,7 @@ namespace RandomSharp.UnitTest
             Assert.IsTrue(resultCounter.List.All(d => d >= minInt && d <= maxInt));
         }
 
-        [TestMethod]
-        public void Double_ReturnsRandomDoubleBetweenMinAndMax()
+        public virtual void Double_ReturnsRandomDoubleBetweenMinAndMax()
         {
             var minDouble = 1;
             var maxDouble = 20;
@@ -164,8 +148,7 @@ namespace RandomSharp.UnitTest
             Assert.IsTrue(result >= minDouble && result <= maxDouble);
         }
 
-        [TestMethod]
-        public void NullableDouble_ReturnsRandomDoubleBetweenMinAndMaxOrNull()
+        public virtual void NullableDouble_ReturnsRandomDoubleBetweenMinAndMaxOrNull()
         {
             var minDouble = 1;
             var maxDouble = 20;
@@ -182,8 +165,7 @@ namespace RandomSharp.UnitTest
             Assert.IsTrue(resultCounter.List.All(d => d >= minDouble && d <= maxDouble));
         }
 
-        [TestMethod]
-        public void Decimal_ReturnsRandomDecimalBetweenMinAndMax()
+        public virtual void Decimal_ReturnsRandomDecimalBetweenMinAndMax()
         {
             var minDecimal = 1;
             var maxDecimal = 20;
@@ -194,8 +176,7 @@ namespace RandomSharp.UnitTest
             Assert.IsTrue(result >= minDecimal && result <= maxDecimal);
         }
 
-        [TestMethod]
-        public void NullableDecimal_ReturnsRandomDecimalBetweenMinAndMaxOrNull()
+        public virtual void NullableDecimal_ReturnsRandomDecimalBetweenMinAndMaxOrNull()
         {
             var minDecimal = 1;
             var maxDecimal = 20;
@@ -212,8 +193,7 @@ namespace RandomSharp.UnitTest
             Assert.IsTrue(resultCounter.List.All(d => d >= minDecimal && d <= maxDecimal));
         }
 
-        [TestMethod]
-        public void List_ReturnsRandomElementFromList()
+        public virtual void List_ReturnsRandomElementFromList()
         {
             IList<string> list = new List<string>() { "dqdqdz", "qsljku", "eaobcf", "ncvtqkd", "kfgrpmq", "jhdlpmayb", "hgsnklk" };
 
@@ -229,8 +209,7 @@ namespace RandomSharp.UnitTest
             Assert.IsTrue(list.All(resultCounter.List.Contains));
         }
 
-        [TestMethod]
-        public void Parameters_ReturnsRandomElementFromParams()
+        public virtual void Parameters_ReturnsRandomElementFromParams()
         {
             var parameters = new int[9] { 10, 20, 30, 40, 50, 60, 70, 80, 90 };
             int result = _randomizer.Random(parameters);
@@ -245,8 +224,7 @@ namespace RandomSharp.UnitTest
             Assert.IsTrue(parameters.All(resultCounter.List.Contains));
         }
 
-        [TestMethod]
-        public void String_ReturnsRandomNumericString()
+        public virtual void String_ReturnsRandomNumericString()
         {
             int lenght = 30;
             var numeric = _randomizer.String(lenght, StringCharacterType.Numeric);
@@ -256,8 +234,7 @@ namespace RandomSharp.UnitTest
             Assert.IsTrue(!numeric.Any(LowercaseAlpha.Contains));
         }
 
-        [TestMethod]
-        public void String_ReturnsRandomMixedAlphaString()
+        public virtual void String_ReturnsRandomMixedAlphaString()
         {
             int lenght = 30;
             var mixedAlpha = _randomizer.String(lenght, StringCharacterType.MixedAlpha);
@@ -267,8 +244,7 @@ namespace RandomSharp.UnitTest
             Assert.IsTrue(!mixedAlpha.Any(Numeric.Contains));
         }
 
-        [TestMethod]
-        public void String_ReturnsRandomMixedAlphaNumericString()
+        public virtual void String_ReturnsRandomMixedAlphaNumericString()
         {
             int lenght = 30;
             var mixedAlphaNumeric = _randomizer.String(lenght, StringCharacterType.MixedAlphaNumeric);
@@ -278,8 +254,7 @@ namespace RandomSharp.UnitTest
             Assert.IsTrue(mixedAlphaNumeric.Any(Numeric.Contains));
         }
 
-        [TestMethod]
-        public void String_ReturnsRandomLowercaseAlphaString()
+        public virtual void String_ReturnsRandomLowercaseAlphaString()
         {
             int lenght = 30;
             var lowercaseAlpha = _randomizer.String(lenght, StringCharacterType.LowercaseAlpha);
@@ -289,8 +264,7 @@ namespace RandomSharp.UnitTest
             Assert.IsTrue(!lowercaseAlpha.Any(Numeric.Contains));
         }
 
-        [TestMethod]
-        public void String_ReturnsRandomUppercaseAlphaString()
+        public virtual void String_ReturnsRandomUppercaseAlphaString()
         {
             int lenght = 30;
             var uppercaseAlpha = _randomizer.String(lenght, StringCharacterType.UppercaseAlpha);
@@ -300,8 +274,7 @@ namespace RandomSharp.UnitTest
             Assert.IsTrue(!uppercaseAlpha.Any(Numeric.Contains));
         }
 
-        [TestMethod]
-        public void String_ReturnsRandomLowercaseAlphaNumericString()
+        public virtual void String_ReturnsRandomLowercaseAlphaNumericString()
         {
             int lenght = 30;
             var lowercaseAlphaNumeric = _randomizer.String(lenght, StringCharacterType.LowercaseAlphaNumeric);
@@ -311,8 +284,7 @@ namespace RandomSharp.UnitTest
             Assert.IsTrue(lowercaseAlphaNumeric.Any(Numeric.Contains));
         }
 
-        [TestMethod]
-        public void String_ReturnsRandomUppercaseAlphaNumericString()
+        public virtual void String_ReturnsRandomUppercaseAlphaNumericString()
         {
             int lenght = 30;
             var uppercaseAlphaNumeric = _randomizer.String(lenght, StringCharacterType.UppercaseAlphaNumeric);
@@ -322,8 +294,7 @@ namespace RandomSharp.UnitTest
             Assert.IsTrue(uppercaseAlphaNumeric.Any(Numeric.Contains));
         }
 
-        [TestMethod]
-        public void String_ReturnsRandomStringfromChars()
+        public virtual void String_ReturnsRandomStringfromChars()
         {
             int lenght = 30;
             string fromChars = "AZERTYU123456azerty";
@@ -331,6 +302,57 @@ namespace RandomSharp.UnitTest
             Assert.AreEqual(lenght, result.Length);
             Assert.IsTrue(result.All(fromChars.Contains));
             Assert.IsTrue(!result.Any("QSDFGHJKLMWXCVBNqsdfghjklmwxcvbn789".Contains));
+        }
+
+        public virtual void List_ReturnsRandomElementFromListWithWeigth()
+        {
+            IList<double> weight = new List<double>() { 0.35, 0.60, 0.05 };
+            IList<string> list = weight.Select(w => w.ToString()).ToList();
+
+            IList<string> result = new List<string>();
+
+            for (int i = 0; i < 100; i++)
+            {
+                var rand = _randomizer.Random<string>(list, weight.ToArray());
+                result.Add(rand);
+            }
+
+            var orderedWeight = weight.Order().ToList();
+
+            var orderedList = result
+            .GroupBy(str => str)
+            .OrderBy(group => group.Count())
+            .SelectMany(group => group).Distinct()
+            .ToList();
+
+            var group = result.GroupBy(x => x).ToDictionary(d => d.Key, v => v.Count());
+
+            for (int i = 0; i < orderedList.Count; i++)
+            {
+                Assert.AreEqual(orderedWeight[i].ToString(), orderedList[i]);
+            }
+        }
+
+        public virtual void Boolean_ReturnsRandomBooleanWithWeigth()
+        {
+
+            IList<bool> result = new List<bool>();
+            double trueWeight = 0.7;
+            int count = 100;
+            for (int i = 0; i < count; i++)
+            {
+                var rand = _randomizer.Boolean(trueWeight);
+                result.Add(rand);
+            }
+
+            var group = result.GroupBy(x => x).ToDictionary(d => d.Key, v => v.Count());
+
+            var falseWeight = 1 - trueWeight;
+            bool condition = group[true] > group[false]; // count of true > count of false
+            if (trueWeight > falseWeight)
+                Assert.IsTrue(condition);
+            else
+                Assert.IsFalse(condition);
         }
     }
 }
