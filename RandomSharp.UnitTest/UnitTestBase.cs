@@ -1,10 +1,14 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RandomSharp.UnitTest.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace RandomSharp.UnitTest
 {
     public abstract class UnitTestBase
     {
-        protected IRandomizer _randomizer = null!;
+        protected IRandomizer _randomizer;
 
         public const string UppercaseAlpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         public const string LowercaseAlpha = "abcdefghijklmnopqrstuvwxyz";
@@ -317,12 +321,12 @@ namespace RandomSharp.UnitTest
                 result.Add(rand);
             }
 
-            var orderedWeight = weight.Order().ToList();
+            var orderedWeight = weight.OrderBy(w=>w).ToList();
 
             var orderedList = result
             .GroupBy(str => str)
-            .OrderBy(group => group.Count())
-            .SelectMany(group => group).Distinct()
+            .OrderBy(g => g.Count())
+            .SelectMany(g => g).Distinct()
             .ToList();
 
             var group = result.GroupBy(x => x).ToDictionary(d => d.Key, v => v.Count());

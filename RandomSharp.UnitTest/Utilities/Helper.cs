@@ -1,3 +1,5 @@
+using System;
+
 namespace RandomSharp.UnitTest.Utilities
 {
     public class Helper
@@ -11,7 +13,7 @@ namespace RandomSharp.UnitTest.Utilities
         /// <returns>A <see cref="ResultCounter{T}"/> object containing the results and counts.</returns>
         public static ResultCounter<T> Run<T>(Func<T> func, int count)
         {
-            ResultCounter<T> counter = new ResultCounter<T>();
+            ResultCounter<T> counter = ResultCounter<T>.Create();
             for (int i = 0; i < count; i++)
             {
                 T result = func.Invoke();

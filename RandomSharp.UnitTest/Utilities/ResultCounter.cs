@@ -1,4 +1,5 @@
-using System.Collections.Immutable;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace RandomSharp.UnitTest.Utilities
 {
@@ -8,18 +9,9 @@ namespace RandomSharp.UnitTest.Utilities
     /// <typeparam name="T">The type of the results.</typeparam>
     public struct ResultCounter<T>
     {
-        private readonly IList<T> InternalList;
+        private IList<T> InternalList;
 
         public int NullCount;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ResultCounter{T}"/> struct.
-        /// </summary>
-        public ResultCounter()
-        {
-            InternalList = new List<T>();
-            NullCount = 0;
-        }
 
         /// <summary>
         /// Creates a new instance of the <see cref="ResultCounter{T}"/> struct.
@@ -27,7 +19,11 @@ namespace RandomSharp.UnitTest.Utilities
         /// <returns>A new instance of <see cref="ResultCounter{T}"/>.</returns>
         public static ResultCounter<T> Create()
         {
-            return new ResultCounter<T>();
+            return new ResultCounter<T>
+            {
+                InternalList = new List<T>(),
+                NullCount = 0
+            };
         }
 
         /// <summary>
@@ -38,7 +34,7 @@ namespace RandomSharp.UnitTest.Utilities
         /// <summary>
         /// Gets an immutable list containing the items.
         /// </summary>
-        public ImmutableList<T> List { get { return InternalList.ToImmutableList(); } }
+        public IReadOnlyList<T> List { get { return InternalList.ToList().AsReadOnly(); } }
 
         /// <summary>
         /// Adds an item to the list.

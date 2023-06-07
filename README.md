@@ -13,7 +13,7 @@ It also allows developers to implement their own generation algorithms if needed
 generating random values from an enum, and generating random values within specific ranges.
 
 ## Features
-- [x] Target .NET Standard 2.0
+- [x] Target .NET Framework 4.5.2
 - [x] Generate random values for any .NET type.
 - [x] Support weighted distribution.
 - [x] Support for nullable values.

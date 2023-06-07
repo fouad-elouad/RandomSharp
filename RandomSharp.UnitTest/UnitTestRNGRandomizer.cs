@@ -1,3 +1,4 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RandomSharp.Impl;
 
 namespace RandomSharp.UnitTest
