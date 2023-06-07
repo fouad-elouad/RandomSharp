@@ -15,6 +15,7 @@ generating random values from an enum, and generating random values within speci
 ## Features
 - [x] Target .NET Standard 2.0
 - [x] Generate random values for any .NET type.
+- [x] Support weighted distribution.
 - [x] Support for nullable values.
 - [x] Extensibility (Implement your own generation algorithm)
 - [x] Unit Test Project
@@ -39,6 +40,11 @@ The RNGCryptoServiceProvider class utilizes a cryptographic random number genera
 ### XorShiftRandomizer
 The library also includes an `XorShiftRandomizer` class.
 The XorShift algorithm is a pseudorandom number generator that uses bitwise exclusive OR (XOR) and shift operations to generate random numbers. It is known for its fast execution.
+
+### Weighted distribution
+It allows you to generate random values based on a specific distribution with varying probabilities.
+It enables you to assign different weights or probabilities to each possible outcome, influencing the likelihood of generating certain values.
+This is useful in scenarios where you want to simulate real-world scenarios or emulate specific probability distributions.
 
 ### Support for Nullable Values
 The library includes support for generating nullable values.
@@ -121,8 +127,8 @@ allowing developers to simulate various scenarios and test the behavior of their
 ```csharp
 	IRandomizer randomizer = new XorShiftRandomizer();
 	int lenght = 30;
-	string numeric = _randomizer.String(lenght, StringCharacterType.Numeric);
-	string uppercaseAlpha = _randomizer.String(lenght, StringCharacterType.UppercaseAlpha);
+	string numeric = randomizer.String(lenght, StringCharacterType.Numeric);
+	string uppercaseAlpha = randomizer.String(lenght, StringCharacterType.UppercaseAlpha);
 ```
 
 ### Random nullable values
@@ -140,6 +146,96 @@ allowing developers to simulate various scenarios and test the behavior of their
 	int? nullableSquare = randomizer.Nullable(inputNumber, CalculateSquare);
 ```
 
+### Weighted distribution
+
+```csharp
+	public class Employee
+    {
+        public int yearsOfExperience { get; set; }
+
+        public ExperienceLevel ExperienceLevel { get; set; }
+
+    }
+
+    public enum ExperienceLevel { Junior, Senior, Executive }
+```
+
+```csharp
+
+    IRandomizer randomizer = new RNGRandomizer();
+    var experienceLevels = Enum.GetValues<ExperienceLevel>();
+
+    // 55% Junior, 35% Senior, 10% Executive
+    double[] weights = new List<double>() { 0.55, 0.35, 0.1 }.ToArray(); 
+
+    var oneEmployee = new Employee
+    {
+        yearsOfExperience = randomizer.Int(0, 25),
+        ExperienceLevel = randomizer.Random(experienceLevels, weights)
+    };
+
+    IList<Employee> employees = new List<Employee>();
+    for (int i = 0; i < 100; i++)
+    {
+            var employee = new Employee
+        {
+            yearsOfExperience = randomizer.Int(0, 25),
+            ExperienceLevel = randomizer.Random(experienceLevels, weights)
+        };
+        employees.Add(employee);
+    }
+
+    // Count distribution
+    var group = employees.GroupBy(e => e.ExperienceLevel).ToDictionary(e => e.Key, e => e.Select(a => a.yearsOfExperience).ToList());
+```
+
+Here's an example to illustrate a complex scenario of random weighted distribution.
+
+In this example, we have the ExperienceLevel enumeration representing different levels of experience. We calculate the weights of each experience level based on the given `yearsOfExperience`.
+
+```csharp
+
+    IRandomizer randomizer = new RNGRandomizer();
+    var experienceLevels = Enum.GetValues<ExperienceLevel>();
+    var yearsOfExperience = randomizer.Int(0, 25);
+    double[] weights = CalulateWeights(yearsOfExperience); // calculates ExperienceLevel weights based on yearsOfExperience
+    var employee = new Employee
+    {
+        yearsOfExperience = yearsOfExperience,
+        ExperienceLevel = randomizer.Random(experienceLevels, weights)
+    };
+
+    public static double[] CalulateWeights(int yearsOfExperience)
+        {
+            if (yearsOfExperience <= 2) //  years <= 2 : 100% Junior
+            {
+                return new List<double>() { 1, 0, 0 }.ToArray();
+            }
+
+            if (yearsOfExperience <= 5) // 2 < years <= 5  : 95% Junior, 5% Senior
+            {
+                return new List<double>() { 0.95, 0.05, 0 }.ToArray();
+            }
+            else if (yearsOfExperience <= 10) // 5 < years <= 10  : 10% Junior, 90% Senior
+            {
+                return new List<double>() { 0.1, 0.9, 0 }.ToArray();
+            }
+            else if (yearsOfExperience <= 15) // 10 < years <= 15  : 95% Senior, 5% Executive
+            {
+                return new List<double>() { 0, 0.95, 0.05 }.ToArray();
+            }
+            else if (yearsOfExperience <= 20) // 15 < years <= 20  : 10% Senior, 90% Executive
+            {
+                return new List<double>() { 0, 0.1, 0.9 }.ToArray();
+            }
+            else
+            {
+                // 20 < years : 100% Executive
+                return new List<double>() { 0, 0, 1 }.ToArray();
+            }
+        }
+```
+
 ## Implement your own generation algorithm
 
 You can Implement your own custom generation algorithm within the library.
@@ -148,6 +244,33 @@ Instead of relying on the default algorithms provided by the library, you have t
 You can design an algorithm that aligns with your specific application or scenario, taking into account factors such as data distribution, range constraints, or any other specific requirements.
 To implement your own generation algorithm, you can create a new class that implements the Randomizer class with your desired algorithm, 
 and then use an instance of that class instead of other Randomizer implementations.
+
+These abstract methods must be implemented 
+
+```csharp
+
+    protected abstract bool InternalBoolean();
+```
+
+```csharp
+
+    protected abstract int InternalInt(int maxExclusive);
+```
+
+```csharp
+
+    protected abstract int InternalInt(int minInclusive, int maxExclusive);
+```
+
+```csharp
+
+    protected abstract double InternalDouble(double min, double max);
+```
+
+```csharp
+
+    protected abstract double InternalDouble();
+```
 
 Here is an example of a custom implementation based on Lagged Fibonacci Generator
 
